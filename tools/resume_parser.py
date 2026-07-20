@@ -78,38 +78,42 @@ def _parse_docx(file_path: str) -> str:
 def _parse_pdf_via_ocr(file_path: str) -> str:
     """PDF 逐页转图片 → 智谱 OCR 识别，返回合并文本。
 
-    使用 PyMuPDF 将每页渲染为 PNG，然后调用智谱 OCR API。
+    使用智谱 file_parser API 进行文档解析。
     """
     client = get_zhipu_client()
-    doc = fitz.open(file_path)
-    all_text: list[str] = []
 
-    for page_num in range(len(doc)):
-        page = doc[page_num]
-        # 渲染为图片（200 DPI，兼顾质量与速度）
-        pix = page.get_pixmap(dpi=200)
-        img_bytes = pix.tobytes("png")
+    try:
+        # 使用智谱 file_parser API 直接解析 PDF
+        result = client.file_parser.create(
+            file=open(file_path, "rb"),
+            file_type="pdf",
+            tool_type="zhipu-pro",  # 使用智谱自研解析引擎
+        )
+        task_id = result.id
 
-        try:
-            # 智谱 OCR API：上传图片，获取识别结果
-            result = client.files.create(
-                file=img_bytes,
-                purpose="ocr",
-            )
-            # 获取 OCR 结果文本
-            ocr_text = _extract_ocr_text(result)
-            if ocr_text:
-                all_text.append(ocr_text)
-        except Exception as e:
-            all_text.append(f"[OCR_PAGE_{page_num + 1}_ERROR] {e}")
+        # 轮询等待解析完成
+        import time
+        max_wait = 60
+        elapsed = 0
+        while elapsed < max_wait:
+            status = client.file_parser.retrieve(task_id)
+            if status.status == "success":
+                break
+            if status.status == "failed":
+                raise Exception(f"OCR failed: {status}")
+            time.sleep(2)
+            elapsed += 2
 
-    doc.close()
-    return "\n".join(all_text)
+        # 获取解析结果（纯文本格式）
+        content = client.file_parser.content(task_id, format_type="text")
+        return content.content if hasattr(content, "content") else str(content)
+
+    except Exception as e:
+        return f"[OCR_ERROR] {e}"
 
 
 def _extract_ocr_text(result) -> str:
-    """从智谱 OCR API 返回结果中提取文本。"""
-    # 智谱 OCR 返回的 content 中提取识别文字
+    """已废弃，OCR 逻辑已合并到 _parse_pdf_via_ocr。保留以防兼容性引用。"""
     try:
         if hasattr(result, "content"):
             return result.content

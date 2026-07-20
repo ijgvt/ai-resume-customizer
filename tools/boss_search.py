@@ -33,7 +33,7 @@ def search_boss(keyword: str, city: str, max_pages: int = 3) -> list[dict]:
         max_pages: 最大翻页数
 
     Returns:
-        [{title, company, salary, description, url, city_name}, ...]
+        [{title, company, salary, description, url, city}, ...]
     """
     driver = _create_driver()
     jobs: list[dict] = []
@@ -79,7 +79,7 @@ def search_boss(keyword: str, city: str, max_pages: int = 3) -> list[dict]:
                             "salary": salary,
                             "description": desc,
                             "url": url,
-                            "search_city": city,
+                            "city": city,
                         })
                 except Exception:
                     continue  # 单个卡片解析失败不影响整体
@@ -88,7 +88,7 @@ def search_boss(keyword: str, city: str, max_pages: int = 3) -> list[dict]:
             if page < max_pages - 1:
                 try:
                     next_btn = driver.find_element(By.CSS_SELECTOR, ".page .next, .next-page")
-                    if "disabled" in next_btn.get_attribute("class") or "":
+                    if "disabled" in (next_btn.get_attribute("class") or ""):
                         break
                     next_btn.click()
                     time.sleep(3)

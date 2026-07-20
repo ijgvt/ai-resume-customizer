@@ -92,9 +92,8 @@ def generate_pdf(
         # 排序：RAG 命中 → 前置
         def _skill_sort_key(s):
             name = s.get("name", "") if isinstance(s, dict) else str(s)
-            relevant = name in relevant_skills or any(
-                kw in name for kw in (jd.get("jd_text", "") + jd.get("title", ""))
-            )
+            jd_text = (jd.get("jd_text", "") + jd.get("title", "")).lower()
+            relevant = name in relevant_skills or (name.lower() in jd_text)
             return 0 if relevant else 1
 
         sorted_skills = sorted(skills, key=_skill_sort_key)
@@ -118,9 +117,8 @@ def generate_pdf(
             if not isinstance(proj, dict):
                 continue
             pname = proj.get("name", "")
-            is_relevant = pname in relevant_projects or any(
-                kw in str(proj) for kw in (jd.get("jd_text", "") + jd.get("title", ""))
-            )
+            jd_text_lower = (jd.get("jd_text", "") + jd.get("title", "")).lower()
+            is_relevant = pname in relevant_projects or pname.lower() in jd_text_lower
 
             # 项目标题
             pdf.set_font("NotoSansSC", "B" if is_relevant else "", 11 if is_relevant else 10)

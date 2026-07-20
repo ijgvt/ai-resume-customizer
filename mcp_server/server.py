@@ -1,9 +1,11 @@
 """MCP Server SSE 入口：注册所有工具，通过 SSE 暴露。"""
-import asyncio
 import json
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
 from mcp.types import Tool, TextContent
+from starlette.applications import Starlette
+from starlette.routing import Route
+import uvicorn
 
 from tools.profile_manager import load_profile, save_profile, check_completeness, update_field
 from tools.resume_parser import parse_file, parse_files, parse_directory
@@ -222,16 +224,27 @@ def _v(value, field_name: str):
     return f.get("value") if isinstance(f, dict) else None
 
 
-async def main():
-    """启动 MCP SSE Server。"""
+async def handle_sse(request):
+    """Handle SSE connection request."""
+    async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
+        await app.run(streams[0], streams[1], app.create_initialization_options())
+
+
+sse = SseServerTransport("/messages")
+
+starlette_app = Starlette(
+    routes=[
+        Route("/sse", endpoint=handle_sse),
+        Route("/messages", endpoint=sse.handle_post_message, methods=["POST"]),
+    ]
+)
+
+
+def main():
+    """启动 MCP SSE Server，监听 localhost:8765。"""
     init_chroma()
-    async with SseServerTransport("/messages") as (read_stream, write_stream):
-        await app.run(
-            read_stream,
-            write_stream,
-            app.create_initialization_options(),
-        )
+    uvicorn.run(starlette_app, host="localhost", port=8765)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

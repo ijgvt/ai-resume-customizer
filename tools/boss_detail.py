@@ -3,20 +3,29 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 def _create_driver() -> webdriver.Chrome:
-    """创建带反检测配置的 Chrome WebDriver。"""
+    """创建使用用户 Chrome Profile 的 WebDriver（保留登录态）。
+
+    注意：使用前必须关闭所有 Chrome 窗口，否则 Chrome 会锁定 Profile 导致启动失败。
+    """
+    import os
     options = Options()
+
+    # 使用用户已有的 Chrome Profile 保留登录态
+    user_data_dir = os.path.expandvars(
+        r"%LOCALAPPDATA%\Google\Chrome\User Data"
+    )
+    options.add_argument(f"--user-data-dir={user_data_dir}")
+    options.add_argument("--profile-directory=Default")
+
+    # 去掉自动化检测标记
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationEnabled", False)
+
     driver = webdriver.Chrome(options=options)
-    driver.execute_script(
-        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-    )
     return driver
 
 

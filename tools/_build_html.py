@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 简历优化工具：读取简历文件 + 生成 HTML 简历
@@ -109,13 +109,13 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{name} - 简历</title>
 <style>
+html {{ font-size: 13px; }}
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 body {{
   font-family: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
   color: #333;
   line-height: 1.65;
   background: #f0f0f0;
-  font-size: 13px;
 }}
 .resume {{
   max-width: 210mm;
@@ -123,6 +123,7 @@ body {{
   padding: 18mm 20mm 14mm;
   background: white;
   box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  font-size: 13px;
 }}
 /* ---- Header ---- */
 .header {{
@@ -134,14 +135,14 @@ body {{
   margin-bottom: 12px;
 }}
 .header-left h1 {{
-  font-size: 22px;
+  font-size: 1.692rem;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: 1px;
   margin-bottom: 4px;
 }}
 .header-contact {{
-  font-size: 12px;
+  font-size: 0.923rem;
   color: #555;
   line-height: 1.7;
 }}
@@ -161,7 +162,7 @@ body {{
   margin-bottom: 10px;
 }}
 .section-title {{
-  font-size: 14px;
+  font-size: 1.077rem;
   font-weight: 700;
   color: #1a1a1a;
   border-bottom: 1px solid #ddd;
@@ -174,7 +175,7 @@ body {{
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 1px;
-  font-size: 13px;
+  font-size: 1rem;
 }}
 .edu-left {{ display: flex; align-items: baseline; gap: 6px; }}
 .edu-school {{ font-weight: 700; }}
@@ -182,15 +183,15 @@ body {{
   display: inline-block;
   background: #e8f4fd;
   color: #2980b9;
-  font-size: 10.5px;
+  font-size: 0.808rem;
   padding: 0 5px;
   border-radius: 2px;
   font-weight: 600;
 }}
 .edu-detail {{ color: #555; }}
-.edu-date {{ color: #888; font-size: 12px; white-space: nowrap; }}
+.edu-date {{ color: #888; font-size: 0.923rem; white-space: nowrap; }}
 .edu-courses {{
-  font-size: 12px;
+  font-size: 0.923rem;
   color: #666;
   margin-top: 1px;
   line-height: 1.6;
@@ -203,9 +204,9 @@ body {{
   margin-bottom: 4px;
 }}
 .exp-left {{ display: flex; align-items: baseline; gap: 8px; }}
-.exp-company {{ font-weight: 700; font-size: 13px; }}
-.exp-role {{ color: #555; font-size: 13px; }}
-.exp-date {{ color: #888; font-size: 12px; white-space: nowrap; }}
+.exp-company {{ font-weight: 700; font-size: 1rem; }}
+.exp-role {{ color: #555; font-size: 1rem; }}
+.exp-date {{ color: #888; font-size: 0.923rem; white-space: nowrap; }}
 .bullet-list {{
   margin: 0;
   padding-left: 0;
@@ -215,7 +216,7 @@ body {{
   position: relative;
   padding-left: 12px;
   margin-bottom: 2px;
-  font-size: 12.5px;
+  font-size: 0.962rem;
   line-height: 1.65;
   color: #444;
 }}
@@ -233,7 +234,7 @@ body {{
 /* ---- Skills ---- */
 .skill-item {{
   margin-bottom: 2px;
-  font-size: 12.5px;
+  font-size: 0.962rem;
   line-height: 1.65;
   padding-left: 12px;
   position: relative;
@@ -252,7 +253,7 @@ body {{
 }}
 /* ---- Self Evaluation ---- */
 .self-evaluation {{
-  font-size: 12.5px;
+  font-size: 0.962rem;
   line-height: 1.65;
   color: #444;
 }}
@@ -282,10 +283,8 @@ body {{
   if (!el) return;
   var pageH = 297 - 18 - 14;
   if (el.scrollHeight > pageH * 3.78) {{
-    el.style.transformOrigin = "top left";
     var scale = (pageH * 3.78) / el.scrollHeight;
-    el.style.transform = "scale(" + scale.toFixed(4) + ")";
-    el.style.width = (100 / scale).toFixed(2) + "%";
+    document.documentElement.style.fontSize = (13 * scale).toFixed(2) + "px";
   }}
 }})();
 </script>

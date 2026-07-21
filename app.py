@@ -198,6 +198,21 @@ if st.session_state.page == "home":
             data=html_content, file_name=Path(html_path).name,
             mime="text/html", use_container_width=True,
         )
+
+        try:
+            from tools.html_resume_generator import generate_pdf
+            with st.spinner("正在生成 PDF..."):
+                pdf_path = generate_pdf(html_path)
+            with open(pdf_path, "rb") as pf:
+                st.download_button(
+                    label="📄 下载 PDF 简历（可直接编辑文字）",
+                    data=pf.read(),
+                    file_name=Path(pdf_path).name,
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+        except Exception as e:
+            st.warning(f"PDF 生成失败（可用上方 HTML 按钮手动打印）: {e}")
         st.caption(f"文件路径：{html_path}")
 
         if greeting:

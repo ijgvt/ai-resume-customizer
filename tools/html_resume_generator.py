@@ -257,3 +257,35 @@ def generate_html_resume(profile: dict, jd: dict) -> str:
     """一步完成：STAR 重写 + 存 profile + build HTML。"""
     profile = do_star_rewrite(profile, jd)
     return build_html_from_profile(profile, jd)
+
+
+
+def _find_msedge() -> str | None:
+    import shutil
+    candidates = [
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    ]
+    for p in candidates:
+        if Path(p).exists():
+            return p
+    found = shutil.which("msedge")
+    return found if found else None
+
+
+def generate_pdf(html_path: str) -> str | None:
+    msedge = _find_msedge()
+    if not msedge:
+        raise RuntimeError("微软 Edge 浏览器未找到，无法生成 PDF。")
+    pdf_path = Path(html_path).with_suffix(".pdf")
+    abs_html = Path(html_path).resolve().as_uri()
+    result = subprocess.run(
+        [msedge, "--headless", "--disable-gpu", "--no-sandbox",
+         "--disable-software-rasterizer",
+         f"--print-to-pdf={pdf_path}",
+         "--no-pdf-header-footer", abs_html],
+        capture_output=True, text=True, timeout=30, encoding="utf-8",
+    )
+    if result.returncode != 0 or not pdf_path.exists():
+        raise RuntimeError(f"PDF 生成失败: {result.stderr or "文件未创建"}")
+    return str(pdf_path)

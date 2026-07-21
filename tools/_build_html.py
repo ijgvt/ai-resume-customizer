@@ -263,7 +263,12 @@ body {{
 }}
 @media print {{
   body {{ background: white; }}
-  .resume {{ margin: 0; padding: 18mm 20mm 14mm; box-shadow: none; max-width: none; }}
+  .resume {{
+    margin: 0; padding: 18mm 20mm 14mm; box-shadow: none; max-width: none;
+    transform: none !important;
+    width: auto !important;
+    transform-origin: unset !important;
+  }}
   .section {{ page-break-inside: avoid; }}
 }}
 </style>

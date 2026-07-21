@@ -111,7 +111,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <style>
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 body {{
-  font-family: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Noto Sans SC", sans-serif;
   color: #333;
   line-height: 1.65;
   background: #f0f0f0;

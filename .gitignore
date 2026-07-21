@@ -1,4 +1,4 @@
-# 环境变量
+# 环境变量（含 API Key）
 .env
 
 # 虚拟环境
@@ -10,17 +10,16 @@ __pycache__/
 *.pyc
 *.pyo
 
-# 数据目录（运行时生成）
-data/uploads/*
-data/outputs/*
-data/chroma/*
+# 用户数据
 data/profile.json
+data/outputs/*
+data/uploads/*
+data/photos/*
+data/resume_files/*
+data/chroma/*
+data/edge_profile/
 
-# 保留目录结构
-!data/uploads/.gitkeep
-!data/outputs/.gitkeep
-!data/chroma/.gitkeep
-!data/resume_files/.gitkeep
+!data/**/.gitkeep
 
 # IDE
 .vscode/
@@ -29,3 +28,6 @@ data/profile.json
 # OS
 .DS_Store
 Thumbs.db
+
+# pytest
+.pytest_cache/
